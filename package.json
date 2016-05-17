@@ -1,0 +1,17 @@
+{
+  "name": "promise",
+  "version": "1.0.0",
+  "description": "Promise Implementation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Promise"
+  ],
+  "author": "Jack Clown",
+  "license": "ISC",
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.1"
+  }
+}
