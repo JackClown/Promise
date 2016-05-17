@@ -1,4 +1,6 @@
 # Promise
-Promise Implementation
+It's a Promise implementation with the Promise/A+ specification
 
-This Project hasn't finished yet
+This project hasn't been finished yet
+
+
