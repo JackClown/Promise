@@ -1,8 +1,16 @@
 var assert = require("assert");
 
 var adapter = require('./adapter');
-var resolved = adapter.resolved;
-var rejected = adapter.rejected;
+var resolved = adapter.resolved || function(value){
+	return new Promise(function(res){
+		res(value);
+	});
+};
+var rejected = adapter.rejected ||function(reason){
+	return new Promise(function(res, rej){
+		rej(reason);
+	});
+};
 var deferred = adapter.deferred;
 var dummy = {
 	dummy: 'dummy'
@@ -16,34 +24,12 @@ var done = function() {
 	console.log('done');
 };
 
-var promise = rejected(dummy);
+var promise = resolved(dummy);
+var expectedValue = undefined;
 
-// var promise = new Promise(function(res, rej){
-// 	rej(dummy);
-// });
-
-// function resolved(value){
-// 	return new Promise(function(res){
-// 		res(value);
-// 	});
-// }
-
-promise
-.then(null, function (value) {
-	return {
-		then: function(onFull){
-			// setTimeout(function () {
-				onFull(resolved({
-					then: function(onFullilled){
-						onFullilled(bummy);
-					}
-				}));
-			// }, 0);
-		}
-	};
-})
-.then(function (value) {
-	assert.strictEqual(value, bummy);
+promise.then(function onFulfilled() {
+	return expectedValue;
+}).then(function onPromise2Fulfilled(actualValue) {
+	assert.strictEqual(actualValue, expectedValue);
 	done();
 })
-.then(null, reason=>console.log(reason));

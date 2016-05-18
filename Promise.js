@@ -24,17 +24,13 @@ function Promise(excutor) {
   if(typeof excutor != 'function') throw new TypeError('Promise excutor is not Function');
 
   excutor(function(value) {
-    // self.pm.value = value;
-    // self.pm.status = 'fulfilled';
-    // emit('resolve', self);
-
-    Promise.resolve(self, value);
+    self.pm.value = value;
+    self.pm.status = 'fulfilled';
+    emit('resolve', self);
   }, function(reason) {
-    // self.pm.reason = reason;
-    // self.pm.status = 'rejected';
-    // emit('reject', self);
-    
-    Promise.reject(self, reason);
+    self.pm.reason = reason;
+    self.pm.status = 'rejected';
+    emit('reject', self);
   });
 }
 
@@ -42,23 +38,46 @@ Promise.resolve = function(pro, x) {
   if(pro.pm.status == 'rejected') return;
 
   if (x && x.constructor == Promise) {
-    pro.pm = x.pm;
-    x.evnQue = pro.evnQue;
-  } else if (x && (typeof x == 'object' || typeof x == 'function') && ('then' in x)) {
-    var times = 0;
-
-    try {
-      x.then(function(value) {
-        if(++times > 1) return;
-        Promise.resolve(pro, value);
-      }, function(reason) {
-        if(++times > 1) return;
-        Promise.reject(pro, reason);
-      });
-    } catch(e){
-      if(times === 0) Promise.reject(pro, e);
+    if(x.pm.status == 'fulfilled') {
+      Promise.resolve(pro, x.pm.value);
+      return;
+    }else if(x.pm.status == 'rejected'){
+      Promise.reject(pro, x.pm.reason);
+      return;
+    }else {
+      pro.pm = x.pm;
+      x.evnQue = pro.evnQue;
     }
-    return;
+  } else if (x && (typeof x == 'object' || typeof x == 'function') && ('then' in x)) {
+    try {
+      var then = x.then;
+    }catch(e){
+      Promise.reject(pro, e);
+      return;
+    }
+
+    if(typeof then != 'function'){
+      pro.pm.value = x;
+      pro.pm.status = 'fulfilled';
+    }else {
+      var times = 0;
+      try {
+        then.call(x, function(value) {
+          if(times > 0) return;
+          Promise.resolve(pro, value);
+          times++;
+        }, function(reason) {
+          if(times > 0) return;
+          Promise.reject(pro, reason);
+          times++;
+        })
+      } catch(e){
+        if(times === 0) Promise.reject(pro, e);
+        times++;
+      }
+
+      return;
+    }
   } else {
     pro.pm.value = x;
     pro.pm.status = 'fulfilled';
@@ -112,11 +131,9 @@ Promise.prototype.then = function(onRes, onRej) {
           result = onRej(self.pm.reason);
         }
 
-        if (result) {
-          if(result == next){
-            Promise.reject(next, new TypeError());
-          }else Promise.resolve(next, result);
-        }
+        if(result == next){
+          Promise.reject(next, new TypeError());
+        }else Promise.resolve(next, result);
       } catch (e) {
         Promise.reject(next, e);
       }
