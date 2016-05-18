@@ -6,10 +6,11 @@ var rejected = adapter.rejected;
 var deferred = adapter.deferred;
 var dummy = {
 	dummy: 'dummy'
-}
+};
+
 var done = function() {
 	console.log('done');
-}
+};
 
 var d = deferred();
 var isFulfilled = false;
