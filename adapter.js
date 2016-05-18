@@ -1,4 +1,4 @@
-var Promise = require('./Promise');
+var Promise = require('./index');
 
 exports.resolved = function(value){
 	return new Promise(function(res){
