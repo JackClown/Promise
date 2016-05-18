@@ -1,6 +1,5 @@
 # Promise
 It's a Promise implementation with the Promise/A+ specification
 
-This project hasn't been finished yet
-
+And it has been tested by "promises-aplus-tests" successfully
 
