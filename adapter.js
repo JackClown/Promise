@@ -14,7 +14,7 @@ exports.rejected = function(reason){
 
 exports.deferred = function(){
 	var p = new Promise(function(res, rej){});
-
+	
 	return {
 		promise: p,
 		resolve: function(value){
