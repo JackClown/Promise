@@ -49,8 +49,10 @@ Promise.resolve = function(pro, x) {
       x.evnQue = pro.evnQue;
     }
   } else if (x && (typeof x == 'object' || typeof x == 'function') && ('then' in x)) {
+    var then = null;
+    
     try {
-      var then = x.then;
+      then = x.then;
     }catch(e){
       Promise.reject(pro, e);
       return;
@@ -70,7 +72,7 @@ Promise.resolve = function(pro, x) {
           if(times > 0) return;
           Promise.reject(pro, reason);
           times++;
-        })
+        });
       } catch(e){
         if(times === 0) Promise.reject(pro, e);
         times++;
@@ -84,7 +86,7 @@ Promise.resolve = function(pro, x) {
   }
 
   if(pro.pm.status == 'fulfilled') emit('resolve', pro);
-  else if(pro.pm.status) emit('reject', pro);
+  else if(pro.pm.status == 'rejected') emit('reject', pro);
 };
 
 Promise.reject = function(pro, e) {
