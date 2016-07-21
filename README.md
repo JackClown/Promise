@@ -3,5 +3,3 @@
 
 	And it has been tested by "promises-aplus-tests" successfully
 
-	Not very well
-
