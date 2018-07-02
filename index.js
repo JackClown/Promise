@@ -11,7 +11,7 @@ function bind(elm, type, handle) {
   elm.evnQue[type].push(handle);
 }
 
-function Promise(excutor) {
+function Promise(executor) {
   this.pm = {
     status: 'pending',
     value: '',
@@ -21,16 +21,20 @@ function Promise(excutor) {
 
   var self = this;
 
-  if (typeof excutor != 'function') throw new TypeError('Promise excutor is not Function');
+  if (typeof executor != 'function') throw new TypeError('Promise executor is not Function');
 
-  excutor(function(value) {
-    self.pm.value = value;
-    self.pm.status = 'fulfilled';
-    emit('resolve', self);
+  executor(function(value) {
+    if (self.pm.status === 'pending') {
+      self.pm.value = value;
+      self.pm.status = 'fulfilled';
+      emit('resolve', self);
+    }
   }, function(reason) {
-    self.pm.reason = reason;
-    self.pm.status = 'rejected';
-    emit('reject', self);
+    if (self.pm.status === 'pending') {
+      self.pm.reason = reason;
+      self.pm.status = 'rejected';
+      emit('reject', self);
+    }
   });
 }
 
